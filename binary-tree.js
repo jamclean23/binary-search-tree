@@ -43,17 +43,27 @@ function createTree(array) {
         //LOCALLY SCOPED FUNCTIONS
     
         function sortedArrayToBalancedTree (sortedArray) {
-            if (sortedArray.length === 1) {
-                let root = createNode(sortedArray[0]);
-                return root;
-            }
-    
             let middle = Math.floor(sortedArray.length / 2);
             let left = sortedArray.slice(0, middle);
-            let right = sortedArray.slice(middle);
-    
-            let root = createNode(sortedArray[middle], sortedArrayToBalancedTree(left), 
-                sortedArrayToBalancedTree(right));
+            let right = sortedArray.slice(middle + 1);
+            
+
+            let root = createNode(sortedArray[middle]);
+            
+            if (left.length > 1) {
+                root.left = sortedArrayToBalancedTree(left);
+            } else if (left.length === 1) {
+                root.left = createNode(left[0]);
+            } else {
+                root.left = null;
+            }
+            if (right.length > 1) {
+                root.right = sortedArrayToBalancedTree(right);
+            } else if (right.length === 1){
+                root.right = createNode(right[0]);
+            } else {
+                root.right = null;
+            }
             
             return root;
         }
@@ -97,7 +107,7 @@ console.log('BINARY TREE: ');
 console.dir(tree, { depth: null });
 
 //TESTING-------------------------------------------------------
-T
+
 // Insert Value
 
 // Delete Value
