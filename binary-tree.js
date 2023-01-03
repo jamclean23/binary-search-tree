@@ -4,6 +4,34 @@
 
 // FUNCTIONS----------------------------------------------------
 
+//LEVELORDER
+
+function levelOrder(tree, callback) {
+    //enqueue children
+    //read values and dequeue
+    //repeat with children
+    let queue = [];
+    let result = [];
+    queue.push(tree.root);
+    while (queue.length) {
+        let current = queue.shift();
+        if (callback) {
+            callback(current.value);
+        }
+        result.push(current.value);
+        // callback(current.value);
+        if (current.left) {
+            queue.push(current.left);
+        }
+        if (current.right) {
+            queue.push(current.right);
+        }
+    }
+    
+    return result;
+
+}
+
 // FIND
 
 function find (value, tree) {
@@ -204,7 +232,9 @@ test(find(-533, tree) === 'Not Found');
 console.log('-');
 
 // Breadth-first operations
-
+console.log('levelOrder() returns array, last position 324')
+test(levelOrder(tree)[10] === 324);
+console.log('-');
 // In-order operations
 
 // Pre-order operations
