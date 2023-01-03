@@ -7,20 +7,16 @@
 // FIND
 
 function find (value, tree) {
-    let treeCopy = structuredClone(tree);
-    return recurse(value, treeCopy.root);
+    return recurse(value, tree.root);
 
     function recurse (value, tree) {
         if (tree === null) {
             return 'Not Found';
         }
         if (tree.value === value) {
-            tree.left = null;
-            tree.right = null;
-            return tree;
+            return createNode(value);
         }
         if (value > tree.value) {
-            console.log('recursing right');
             return recurse(value, tree.right);
         } else if (value < tree.value) {
             return recurse(value, tree.left);
@@ -201,8 +197,10 @@ test(tree.root.left.left.left.left === null);
 console.log('-');
 
 // Find value
-console.log('Returns 6345');
-console.log(find(67, tree));
+console.log('Search returns "6345"');
+test(find(6345, tree).value === 6345);
+console.log('Search returns "Not Found"');
+test(find(-533, tree) === 'Not Found');
 console.log('-');
 
 // Breadth-first operations
