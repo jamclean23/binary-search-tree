@@ -4,7 +4,67 @@
 
 // FUNCTIONS----------------------------------------------------
 
-//LEVELORDER
+// POSTORDER TRAVERSAL
+
+function postorder (tree, callback) {
+
+    let result = [];
+    recurse(tree, callback);
+    return result;
+
+    function recurse (tree, callback) {
+        if (tree.left && tree.left.value) {
+           recurse(tree.left, callback);
+        }
+        if (tree.right && tree.right.value) {
+            recurse(tree.right, callback);
+        }
+        if (typeof callback === 'function') callback(tree.value);
+        result.push(tree.value);
+    }
+}
+
+// INORDER TRAVERSAL
+
+function inorder (tree, callback) {
+
+    let result = [];
+    recurse(tree, callback);
+    return result;
+
+    function recurse (tree, callback) {
+        if (tree.left && tree.left.value) {
+           recurse(tree.left, callback);
+        }
+        if (typeof callback === 'function') callback(tree.value);
+        result.push(tree.value);
+        if (tree.right && tree.right.value) {
+            recurse(tree.right, callback);
+        }
+    }
+}
+
+// PREORDER TRAVERSAL
+
+function preorder (tree, callback) {
+
+    let result = [];
+    recurse(tree, callback);
+    return result;
+
+    function recurse (tree, callback) {
+        result.push(tree.value);
+        if (typeof callback === 'function') callback(tree.value);
+        if (tree.left && tree.left.value) {
+           recurse(tree.left, callback);
+        }
+        if (tree.right && tree.right.value) {
+            recurse(tree.right, callback);
+        }
+    }
+}
+
+// LEVELORDER
 
 function levelOrder(tree, callback) {
     //enqueue children
@@ -15,11 +75,10 @@ function levelOrder(tree, callback) {
     queue.push(tree.root);
     while (queue.length) {
         let current = queue.shift();
-        if (callback) {
-            callback(current.value);
-        }
         result.push(current.value);
-        // callback(current.value);
+
+        if (typeof callback === 'function') callback(current.value);
+
         if (current.left) {
             queue.push(current.left);
         }
@@ -202,15 +261,39 @@ function test(testParameter) {
     }
 }
 
+// COMPARE ARRAYS
+function compareArrays(array1, array2) {
+    let mismatch = true;
+    if (array1.length > array2.length) {
+        array1.forEach((item, index) => {
+            if (!(item == array2[index])){
+                mismatch = false;
+            }
+        });
+    } else {
+        array2.forEach((item, index) => {
+            if (!(item === array1[index])){
+                mismatch = false;
+            }
+        });
+    }
+    return mismatch;     
+}
+
 //INIT-----------------------------------------------------------
 
 const unsortedArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+const testSortedArray = [1, 3, 4, 5, 7, 8, 9, 23, 67, 324, 6345];
+const testPreArray = [8, 4, 3, 1, 7, 5, 67, 23, 9, 6345, 324];
+const testPostArray = [1, 3, 5, 7, 4, 9, 23, 324, 6345, 67, 8];
+
 
 let tree = createTree(unsortedArray);
 console.log('\x1b[1;34m%s\x1b[0m', '\n--------INITIAL BINARY TREE-------- ');
 console.dir(tree, { depth: null });
 
 //TESTING-------------------------------------------------------
+
 console.log('\x1b[1;34m%s\x1b[0m', '\n---------TESTS---------\n');
 // Insert Value
 console.log('Inserts 0');
@@ -235,11 +318,21 @@ console.log('-');
 console.log('levelOrder() returns array, last position 324')
 test(levelOrder(tree)[10] === 324);
 console.log('-');
+
 // In-order operations
+console.log('inorder() returns an array of values visited in left root right order');
+test(compareArrays(testSortedArray, inorder(tree.root)));
+console.log('-');
 
 // Pre-order operations
+console.log('preorder() returns an array of values visited in root left right order');
+test(compareArrays(testPreArray, preorder(tree.root)));
+console.log('-');
 
 // Post-order operations
+console.log('postorder() returns an array of values visited in left right root order');
+test(compareArrays(testPostArray, postorder(tree.root)));
+console.log('-');
 
 // Height function
 
@@ -249,6 +342,10 @@ console.log('-');
 
 // rebalance() balances a tree 
 
+console.log('\n');
+
 // End result
-console.log('\x1b[1;34m%s\x1b[0m', '\n--------END RESULT--------');
-console.dir(tree, { depth: null });
+if (process.argv[2] === '-end') {
+    console.log('\x1b[1;34m%s\x1b[0m', '\n--------END RESULT--------');
+    console.dir(tree, { depth: null });
+}
