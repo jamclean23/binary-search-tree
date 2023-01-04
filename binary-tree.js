@@ -4,6 +4,84 @@
 
 // FUNCTIONS----------------------------------------------------
 
+//REBALANCE
+
+function rebalance (tree) {
+    let sortedArray = inorder(tree.root);
+    return createTree(sortedArray);
+}
+
+//ISBALANCED
+
+function isBalanced(tree) {
+
+    if (tree.root) {
+        return recurse(tree.root);
+    } else {
+        return recurse(tree);
+    }
+
+    function recurse (tree) {
+        let balanced = true;
+        postorder(tree, (value, node) => {
+            let left = 1;
+            let right = 1;
+            if (node.left != null) {
+                left = height(value, tree);
+            }
+            if (node.right != null) {
+                right = height(value, tree);
+            }
+            if ((left > right + 2) || (right > left + 2)) {
+                balanced = false;
+            }
+        });
+        return balanced;
+    }
+}
+
+// HEIGHT
+
+function height (value, tree) {
+    let node = find(value, tree); 
+    return recurse(node);
+
+    function recurse (node, counter = 1) {
+        if (node.left === null && node.right === null) {
+            return counter;
+        }
+
+        let left = 0;
+        let right = 0;
+        ++counter;
+        if (node.left != null) left = recurse(node.left, counter);
+        if (node.right != null) right = recurse(node.right, counter);
+
+        return (left > right) ? left : right;
+
+    }
+}
+
+// DEPTH
+
+function depth (value, tree) {
+    return recurse(value, tree.root);
+
+    function recurse (value, tree, counter = 1) {
+        if (tree === null) {
+            return 'Not Found';
+        }
+        if (tree.value === value) {
+            return counter;
+        }
+        if (value > tree.value) {
+            return recurse(value, tree.right, ++counter);
+        } else if (value < tree.value) {
+            return recurse(value, tree.left, ++counter);
+        }
+    }
+}
+
 // POSTORDER TRAVERSAL
 
 function postorder (tree, callback) {
@@ -19,7 +97,7 @@ function postorder (tree, callback) {
         if (tree.right && tree.right.value) {
             recurse(tree.right, callback);
         }
-        if (typeof callback === 'function') callback(tree.value);
+        if (typeof callback === 'function') callback(tree.value, tree);
         result.push(tree.value);
     }
 }
@@ -36,7 +114,7 @@ function inorder (tree, callback) {
         if (tree.left && tree.left.value) {
            recurse(tree.left, callback);
         }
-        if (typeof callback === 'function') callback(tree.value);
+        if (typeof callback === 'function') callback(tree.value, tree);
         result.push(tree.value);
         if (tree.right && tree.right.value) {
             recurse(tree.right, callback);
@@ -54,7 +132,7 @@ function preorder (tree, callback) {
 
     function recurse (tree, callback) {
         result.push(tree.value);
-        if (typeof callback === 'function') callback(tree.value);
+        if (typeof callback === 'function') callback(tree.value, tree);
         if (tree.left && tree.left.value) {
            recurse(tree.left, callback);
         }
@@ -66,7 +144,7 @@ function preorder (tree, callback) {
 
 // LEVELORDER
 
-function levelOrder(tree, callback) {
+function levelOrder (tree, callback) {
     //enqueue children
     //read values and dequeue
     //repeat with children
@@ -94,14 +172,14 @@ function levelOrder(tree, callback) {
 // FIND
 
 function find (value, tree) {
-    return recurse(value, tree.root);
+    return recurse(value, tree);
 
     function recurse (value, tree) {
         if (tree === null) {
             return 'Not Found';
         }
         if (tree.value === value) {
-            return createNode(value);
+            return createNode(value, tree.left, tree.right);
         }
         if (value > tree.value) {
             return recurse(value, tree.right);
@@ -309,9 +387,9 @@ console.log('-');
 
 // Find value
 console.log('Search returns "6345"');
-test(find(6345, tree).value === 6345);
+test(find(6345, tree.root).value === 6345);
 console.log('Search returns "Not Found"');
-test(find(-533, tree) === 'Not Found');
+test(find(-533, tree.root) === 'Not Found');
 console.log('-');
 
 // Breadth-first operations
@@ -335,17 +413,84 @@ test(compareArrays(testPostArray, postorder(tree.root)));
 console.log('-');
 
 // Height function
+console.log('height() returns height of a provided node');
+test(height(8, tree.root) === 4);
+console.log('-');
 
 // Depth function
+console.log('depth() returns the depth of a node with a given value');
+test(depth(324, tree) === 4);
+console.log('-');
 
 // isBalanced() check if the tree is balanced
+console.log('isBalanced() checks if tree is balanced');
+test(isBalanced(tree));
+console.log('-');
 
 // rebalance() balances a tree 
-
+console.log('rebalance() takes an unbalanced tree and returns a balance tree');
+test(isBalanced(rebalance(tree)));
 console.log('\n');
 
-// End result
+// Optional End result
 if (process.argv[2] === '-end') {
     console.log('\x1b[1;34m%s\x1b[0m', '\n--------END RESULT--------');
     console.dir(tree, { depth: null });
 }
+
+// ASSIGNMENT
+console.log('\x1b[1;34m%s\x1b[0m', '--------ASSIGNMENT--------\n');
+
+// Create balanced tree from random numbers
+
+// Random array
+console.log('Balanced tree from random array:');
+let assignmentArray = [];
+for (let i = 0; i < (Math.floor(Math.random()*20)+10); i++) {
+    assignmentArray[i] = Math.floor(Math.random()*400);
+}
+console.log('Randomizing array... ' + assignmentArray);
+
+// Tree conversion
+let assignmentTree = createTree(assignmentArray);
+console.log('\nTree: ');
+console.dir(assignmentTree, { depth: null});
+
+// Check balance:
+console.log('\nBalanced?\n' + isBalanced(assignmentTree));
+
+// Values by various traversals
+console.log('\nValues in various methods of traversal:');
+console.log('Level order: ' + levelOrder(assignmentTree));
+console.log('Pre-order: ' + preorder(assignmentTree.root));
+console.log('Post-order: ' + postorder(assignmentTree.root));
+console.log('In-order: ' + inorder(assignmentTree.root));
+
+// Unbalance
+console.log('\nUnbalancing by adding several numbers...');
+console.log('Adding -3, -5, -2, -6, -20');
+insert(-3, assignmentTree);
+insert(-5, assignmentTree);
+insert(-2, assignmentTree);
+insert(-6, assignmentTree);
+insert(-20, assignmentTree);
+
+// Check balance
+console.log('\nBalanced?\n' + isBalanced(assignmentTree));
+
+// Rebalance
+console.log('\nRebalancing...');
+assignmentTree = rebalance(assignmentTree);
+
+// Check Balance
+console.log('\nBalanced?\n' + isBalanced(assignmentTree));
+
+// Values by various traversals
+console.log('\nValues in various methods of traversal:');
+console.log('Level order: ' + levelOrder(assignmentTree));
+console.log('Pre-order: ' + preorder(assignmentTree.root));
+console.log('Post-order: ' + postorder(assignmentTree.root));
+console.log('In-order: ' + inorder(assignmentTree.root));
+console.log('\n');
+
+
